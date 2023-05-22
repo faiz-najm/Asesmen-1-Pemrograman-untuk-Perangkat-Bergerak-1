@@ -1,36 +1,34 @@
 package org.d3if3155.MoMi
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import org.d3if3155.MoMi.databinding.FragmentFirstBinding
-
+import org.d3if3155.MoMi.databinding.FragmentPersonBinding
+import org.d3if3155.MoMi.databinding.FragmentTransactionBinding
 
 /**
- * A simple [Fragment] subclass as the default destination in the navigation.
+ * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class MainFragment : Fragment() {
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentTransactionBinding? = null
+
+    // Jumlah uang yang dimiliki pengguna
+    private var jumlahUang: Int? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private var namaPengguna: String? = null
-    private var jumlah: Int = 0
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
-
+        _binding = FragmentTransactionBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -38,63 +36,41 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Ambil nama pengguna dari Bundle
-        namaPengguna = arguments?.getString("nama_pengguna")
+        // Menammpilkan nama pengguna dan jumlah uang
+        val namaPengguna = arguments?.getString("nama_pengguna")
+        jumlahUang = arguments?.getInt("jumlah_uang")
 
-        // Always Enabling button next
-        if (namaPengguna != null) {
-            binding.buttonFirst.isEnabled = true
-        }
+        // intent untuk get data dari FirstFragment
+//        val data = requireActivity().intent.getStringExtra("nama_pengguna")
+//        val data2 = requireActivity().intent.getIntExtra("jumlah_uang", 0)
 
-        binding.buttonFirst.setOnClickListener {
-            val namaPengguna = arguments?.getString("nama_pengguna")
-            val jumlahUang = arguments?.getInt("jumlah_uang")
+        binding.namaPengguna.text = "Halo $namaPengguna"
+        binding.uangPengguna.text = "Rp. $jumlahUang"
 
+        binding.buttonSecond.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("nama_pengguna", namaPengguna)
             bundle.putInt("jumlah_uang", jumlahUang!!)
 
-            // Navigate to second fragment
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
+            // insert data to database
+
+            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment, bundle)
         }
 
-        binding.buttonSimpan.setOnClickListener {
-            // nama dan jumlah
-            namaPengguna = binding.nameInp.text.toString()
-            var jumlahUang = binding.jumlahUangInp.text.toString()
-            jumlah = jumlahUang.toInt()
+        // Proses menghitung jumlah uang yang di tambahkan atau di kurangi
+        binding.buttonProses.setOnClickListener {
+            val uangProses = binding.uangProsesInp.text.toString().toInt()
 
-            // validasi
-            if (namaPengguna!!.isEmpty()) {
-                Toast.makeText(context, "Nama tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            // Radio button yang dipilih akan menentukan apakah jumlah uang akan ditambahkan atau dikurangi
+            if (binding.tambahRadioButton.isChecked) {
+                this.jumlahUang = this.jumlahUang?.plus(uangProses)
+            } else if (binding.kurangRadioButton.isChecked) {
+                this.jumlahUang = this.jumlahUang?.minus(uangProses)
             }
 
-            if (jumlahUang.isEmpty()) {
-                Toast.makeText(context, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            binding.uangPengguna.text = "Rp. $jumlahUang"
 
-            // Reset inputan
-            binding.nameInp.text!!.clear()
-            binding.jumlahUangInp.text!!.clear()
 
-            Toast.makeText(context, "Data berhasil disimpan", Toast.LENGTH_SHORT).show()
-
-            // Gunakan nama dan jumlah untuk mengirim data ke fragment selanjutnya
-            /*val bundle1 = Bundle()
-            bundle.putString("nama_pengguna", nama)
-            bundle.putString("jumlah_uang", jumlah)*/
-
-            val bundle = Bundle().apply {
-                putString("nama_pengguna", namaPengguna)
-                putInt("jumlah_uang", jumlah)
-            }
-
-            binding.buttonFirst.isEnabled = true
-
-            // Navigate to second fragment
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
 
         }
     }
@@ -102,11 +78,5 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        // Simpan nama pengguna ke Bundle
-        outState.putString("nama_pengguna", namaPengguna)
     }
 }

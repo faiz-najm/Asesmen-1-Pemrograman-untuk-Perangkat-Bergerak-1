@@ -13,4 +13,8 @@
     <color name="blue_700">#FF1976D2</color>
     <color name="blue_800">#FF1565C0</color>
     <color name="blue_900">#FF0D47A1</color>
+
+    <color name="tambah">#2E7D32</color>
+    <color name="kurang">#D32F2F</color>
+
 </resources>

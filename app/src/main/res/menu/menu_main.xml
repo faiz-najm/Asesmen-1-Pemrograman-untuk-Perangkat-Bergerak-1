@@ -2,9 +2,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="org.d3if3155.MoMi.MainActivity">
+
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menu_histori"
+        android:icon="@drawable/baseline_history_24"
+        app:showAsAction="ifRoom"
+        android:title="History" />
+
+    <item
+        android:id="@+id/action_tentang"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/tentang_aplikasi"
         app:showAsAction="never" />
 </menu>

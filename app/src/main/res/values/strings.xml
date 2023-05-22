@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">MoMi</string>
-    <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">MoMi</string>
     <string name="second_fragment_label">MoMi</string>
@@ -8,8 +7,7 @@
     <string name="previous">Previous</string>
 
     <string name="promtNama">Fulan</string>
-    <string name="description">Money Manager adalah sebuah aplikasi yang dirancang untuk membantu pengguna mengelola keuangan pribadi mereka dengan lebih efektif. Aplikasi ini memungkinkan pengguna untuk melacak pengeluaran mereka, mengatur anggaran, serta memperoleh laporan keuangan secara terperinci.
-    </string>
+    <string name="description">Tambah anggaran untuk mengontrol pengeluaran</string>
     <string name="text_field_nama">Nama</string>
     <string name="jumlah_uang">Jumlah Uang Saat Ini</string>
     <string name="uang_proses">Masukan Jumlah</string>
@@ -20,4 +18,15 @@
     <string name="kurangi">Kurangi</string>
     <string name="promtJumlah">Rp. 10000"</string>
     <string name="proses_uang">Proses</string>
+    <string name="judul_starter1">Atur Keuangan</string>
+    <string name="get_started">GET STARTED</string>
+
+    // Assesment 2
+    <string name="tentang_aplikasi">Tentang Aplikasi</string>
+    <string name="belum_ada_data">Belum ada data</string>
+    <string name="konfirmasi_hapus">Hapus semua histori?</string>
+    <string name="hapus">Hapus</string>
+    <string name="batal">Batal</string>
+    <string name="hapus_histori">Hapus Histori</string>
+
 </resources>

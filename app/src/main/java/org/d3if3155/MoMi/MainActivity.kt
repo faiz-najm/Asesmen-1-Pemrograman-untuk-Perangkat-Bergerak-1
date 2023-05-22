@@ -1,7 +1,6 @@
 package org.d3if3155.MoMi
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
@@ -13,6 +12,7 @@ import android.view.MenuItem
 import org.d3if3155.MoMi.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         // Penggunaan Navigation Component untuk mengatur fragment yang ditampilkan di dalam activity ini
         val navController = findNavController(R.id.nav_host_fragment_content_main)
+        // AppBarConfiguration untuk mengatur fragment yang ditampilkan di dalam AppBar
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
@@ -43,7 +44,10 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_tentang -> {
+                findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_FirstFragment_to_SecondFragment)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
