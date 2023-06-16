@@ -3,28 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/PersonFragment">
-
-    <fragment
-        android:id="@+id/PersonFragment"
-        android:name="org.d3if3155.MoMi.ui.person.PersonFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_person">
-
-        <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
+    app:startDestination="@id/SecondFragment">
 
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="org.d3if3155.MoMi.MainFragment"
+        android:name="org.d3if3155.MoMi.ui.transaction.TransactionFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_transaction">
-
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/PersonFragment" />
+            android:id="@+id/action_SecondFragment_to_historiFragment"
+            app:destination="@id/historiFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/historiFragment"
+        android:name="org.d3if3155.hitungbmi.ui.histori.HistoriFragment"
+        android:label="HistoriFragment"
+        tools:layout="@layout/fragment_histori"/>
 
 </navigation>

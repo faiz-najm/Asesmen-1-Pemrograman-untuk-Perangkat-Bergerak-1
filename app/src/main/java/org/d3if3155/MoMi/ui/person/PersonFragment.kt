@@ -1,21 +1,25 @@
 package org.d3if3155.MoMi.ui.person
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import org.d3if3155.MoMi.R
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.d3if3155.MoMi.MainActivity
 import org.d3if3155.MoMi.data.SettingDataStore
 import org.d3if3155.MoMi.data.dataStore
 import org.d3if3155.MoMi.databinding.FragmentPersonBinding
 import org.d3if3155.MoMi.db.TransactionDb
-import org.d3if3155.hitungbmi.ui.histori.HistoriViewModel
-import org.d3if3155.hitungbmi.ui.histori.HistoriViewModelFactory
+import org.d3if3155.MoMi.db.UserEntity
 import org.d3if3155.hitungbmi.ui.histori.PersonViewModel
+import org.d3if3155.hitungbmi.ui.histori.PersonViewModelFactory
 
 
 /**
@@ -23,12 +27,13 @@ import org.d3if3155.hitungbmi.ui.histori.PersonViewModel
  */
 class PersonFragment : Fragment() {
 
-    // datastore untuk menyimpan data current user
+    private val TAG = "PersonFragment"
+
     private val layoutDataStore by lazy { SettingDataStore(requireActivity().dataStore) }
 
     private val viewModel: PersonViewModel by lazy {
         val db = TransactionDb.getInstance(requireContext())
-        val factory = HistoriViewModelFactory(db.dao)
+        val factory = PersonViewModelFactory(db.transactionDao, db.userDao)
         ViewModelProvider(this, factory)[PersonViewModel::class.java]
     }
 
@@ -37,15 +42,17 @@ class PersonFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private var namaPengguna: String? = null
+    private var id: Long = 0
+    private var namaPengguna: String? = ""
     private var jumlah: Int = 0
+    private val isFisrtTime: Boolean = true
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentPersonBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -54,27 +61,6 @@ class PersonFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Ambil nama pengguna dari Bundle
-        namaPengguna = arguments?.getString("nama_pengguna")
-
-        // Always Enabling button next
-        if (namaPengguna != null) {
-            binding.buttonFirst.isEnabled = true
-        }
-
-        binding.buttonFirst.setOnClickListener {
-            val namaPengguna = arguments?.getString("nama_pengguna")
-            val jumlahUang = arguments?.getInt("jumlah_uang")
-
-            val bundle = Bundle()
-            bundle.putString("nama_pengguna", namaPengguna)
-            bundle.putInt("jumlah_uang", jumlahUang!!)
-
-
-            // Navigate to second fragment
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
-        }
 
         binding.buttonSimpan.setOnClickListener {
             simpanUser()
@@ -97,29 +83,31 @@ class PersonFragment : Fragment() {
             return
         }
 
-        // Reset inputan
-        binding.nameInp.text!!.clear()
-        binding.jumlahUangInp.text!!.clear()
+        val user = UserEntity(
+            nama = binding.nameInp.text.toString()
+        )
 
-        Toast.makeText(context, "Data berhasil disimpan", Toast.LENGTH_SHORT).show()
+        viewModel.simpanUser(user)
 
-        // Gunakan nama dan jumlah untuk mengirim data ke fragment selanjutnya
-        /*val bundle1 = Bundle()
-            bundle.putString("nama_pengguna", nama)
-            bundle.putString("jumlah_uang", jumlah)*/
+        viewModel.currentUser.observe(viewLifecycleOwner) {
 
-        val bundle = Bundle().apply {
-            putString("nama_pengguna", namaPengguna)
-            putInt("jumlah_uang", jumlah)
+            viewModel.simpanTransaksi(
+                this,
+                it.id,
+                jumlah,
+                true
+            )
+
+            // Save data to DataStore currentUseID to use in other activity
+            runBlocking {
+                layoutDataStore.saveUserId(it.id, requireActivity())
+                layoutDataStore.saveStarterFinish(!isFisrtTime, requireActivity())
+            }
+
+            Toast.makeText(context, "Data berhasil disimpan", Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, MainActivity::class.java)
+            startActivity(intent)
         }
-
-        // masukkan data ke database lewat viewmodel
-        viewMode
-
-        binding.buttonFirst.isEnabled = true
-
-        // Navigate to second fragment
-        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
     }
 
     // Option Menu Setting onClick go to SettingFragment

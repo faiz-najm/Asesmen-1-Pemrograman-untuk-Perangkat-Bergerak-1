@@ -9,6 +9,15 @@
         android:id="@+id/onboardingFragment"
         android:name="org.d3if3155.MoMi.ui.onboarding.OnboardingFragment"
         android:label="StarterFragment"
-        tools:layout="@layout/fragment_onboarding"/>
+        tools:layout="@layout/fragment_onboarding">
+        <action
+            android:id="@+id/action_onboardingFragment_to_personFragment"
+            app:destination="@id/personFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/personFragment"
+        android:name="org.d3if3155.MoMi.ui.person.PersonFragment"
+        android:label="fragment_person"
+        tools:layout="@layout/fragment_person" />
 
 </navigation>

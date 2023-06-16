@@ -1,6 +1,7 @@
 package org.d3if3155.MoMi.ui.onboarding
 
 import OnboardingViewModel
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +10,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.coroutines.launch
+import org.d3if3155.MoMi.MainActivity
+import org.d3if3155.MoMi.R
 import org.d3if3155.MoMi.data.SettingDataStore
 import org.d3if3155.MoMi.data.dataStore
 import org.d3if3155.MoMi.databinding.FragmentOnboardingBinding
 
 
 class OnboardingFragment : Fragment() {
-
-    // layout data store adalah variabel yang akan digunakan untuk mengakses data store
-    private val layoutDataStore by lazy { SettingDataStore(requireActivity().dataStore) }
 
     // lazy adalah fungsi yang akan dijalankan ketika variabel tersebut dipanggil
     // by lazy akan membuat variabel tersebut menjadi singleton
@@ -30,7 +31,6 @@ class OnboardingFragment : Fragment() {
     private var _binding: FragmentOnboardingBinding? = null
     private var myAdapter: OnboardingAdapter? = null
     private val binding get() = _binding!!
-    private val isFisrtTime: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,10 +57,8 @@ class OnboardingFragment : Fragment() {
 
         // Jika buttonGetStarted di klik, maka akan menjalankan kode di dalamnya yaitu menjalankan main activity dan mengakhiri activity ini
         binding.buttonGetStarted.setOnClickListener {
-            viewModel.viewModelScope.launch {
-                layoutDataStore.saveFirstTime(!isFisrtTime, requireActivity())
-            }
-            activity?.finish()
+            // nav controller untuk berpindah ke fragment person
+            findNavController().navigate(R.id.action_onboardingFragment_to_personFragment)
         }
 
         viewModel.getData().observe(viewLifecycleOwner) { data ->

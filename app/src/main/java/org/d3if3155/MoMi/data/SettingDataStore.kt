@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+    import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -20,14 +20,15 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
 
 class SettingDataStore(prefDataStore: DataStore<Preferences>) {
 
-    private val IS_FIRST_TIME = booleanPreferencesKey("is_starter_finish")
-    private val USER_ID_KEY = longPreferencesKey("user_id")
+    private val IS_STARTER_FINISH = booleanPreferencesKey("is_starter_finish")
+    // val for save object UserEntity to dataStore
+    private val USER_ID_KEY = longPreferencesKey("user_id_key")
 
     val isFirstTime: Flow<Boolean> = prefDataStore.data
         .catch { emit(emptyPreferences()) }
-        .map { it[IS_FIRST_TIME] ?: true }
+        .map { it[IS_STARTER_FINISH] ?: true }
 
-    val userIdFlow: Flow<Long?> = prefDataStore.data
+    val userIdFlow: Flow<Long> = prefDataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -39,8 +40,10 @@ class SettingDataStore(prefDataStore: DataStore<Preferences>) {
             preferences[USER_ID_KEY] ?: 0
         }
 
-    suspend fun saveFirstTime(isStarterFinish: Boolean, context: Context) {
-        context.dataStore.edit { it[IS_FIRST_TIME] = isStarterFinish }
+    suspend fun saveStarterFinish(isStarterFinish: Boolean, context: Context) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_STARTER_FINISH] = isStarterFinish
+        }
     }
 
     suspend fun saveUserId(userId: Long, context: Context) {

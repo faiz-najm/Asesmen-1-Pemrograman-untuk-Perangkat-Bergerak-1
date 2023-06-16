@@ -24,7 +24,8 @@
     // Assesment 2
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
     <string name="belum_ada_data">Belum ada data</string>
-    <string name="konfirmasi_hapus">Hapus semua histori?</string>
+    <string name="konfirmasi_hapus">Hapus semua transaction?</string>
+    <string name="konfirmasi_hapus_item">Hapus transaction?</string>
     <string name="hapus">Hapus</string>
     <string name="batal">Batal</string>
     <string name="hapus_histori">Hapus Histori</string>
