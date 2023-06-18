@@ -7,7 +7,6 @@ buildscript {
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-
     // ROOM database
     id 'kotlin-kapt'
 }
@@ -54,6 +53,7 @@ dependencies {
     // Navigation Component
     implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
@@ -74,4 +74,13 @@ dependencies {
 
     // Datastore Preferences
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    // modul 12 - retrofit for connect to the internet
+    // moshi for parsing json
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.9.3'
+
+    //glide for image loading from internet
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
 }

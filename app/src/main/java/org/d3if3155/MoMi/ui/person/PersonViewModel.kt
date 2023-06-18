@@ -28,12 +28,13 @@ class PersonViewModel(
         userDb.insert(user)
     }
 
-    fun simpanTransaksi(fragment: Fragment, user: Long, jumlah: Int, b: Boolean) {
+    fun simpanTransaksi(fragment: Fragment, user: Long, jumlah: Long, b: Boolean) {
         runBlocking(Dispatchers.IO) {
             val transaksi = TransactionEntity(
                 userId = user,
                 amount = jumlah,
-                type = b
+                type = b,
+                imageId = "3668841_income_wallet_salary_earnings.png"
             )
 
             transactionDb.insert(transaksi)

@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/personFragment"
         android:name="org.d3if3155.MoMi.ui.person.PersonFragment"
-        android:label="fragment_person"
+        android:label="Add Account"
         tools:layout="@layout/fragment_person" />
 
 </navigation>

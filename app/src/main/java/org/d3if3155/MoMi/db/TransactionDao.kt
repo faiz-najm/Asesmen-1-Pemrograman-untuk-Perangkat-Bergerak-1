@@ -27,7 +27,7 @@ interface TransactionDao {
 
     // Total income subtract total expense from 1 user only (userId)
     @Query("SELECT SUM(CASE WHEN type = 1 THEN amount ELSE 0 END) - SUM(CASE WHEN type = 0 THEN amount ELSE 0 END) FROM transactions WHERE userId = :userId")
-    fun getTotalAmount(userId: Long): LiveData<Int>
+    fun getTotalAmount(userId: Long): LiveData<Long>
 
     @Query("DELETE FROM transactions")
     fun clearData()

@@ -13,11 +13,30 @@
         <action
             android:id="@+id/action_SecondFragment_to_historiFragment"
             app:destination="@id/historiFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_categoryPicFragment"
+            app:destination="@id/categoryPicFragment" />
     </fragment>
     <fragment
         android:id="@+id/historiFragment"
         android:name="org.d3if3155.hitungbmi.ui.histori.HistoriFragment"
-        android:label="HistoriFragment"
-        tools:layout="@layout/fragment_histori"/>
+        android:label="Histori"
+        tools:layout="@layout/fragment_histori">
+        <action
+            android:id="@+id/action_historiFragment_to_categoryPicFragment"
+            app:destination="@id/categoryPicFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryPicFragment"
+        android:name="org.d3if3155.MoMi.ui.categorypic.CategoryPicFragment"
+        android:label="Select Category"
+        tools:layout="@layout/fragment_category_pic">
+        <action
+            android:id="@+id/action_categoryPicFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <argument
+            android:name="imageId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

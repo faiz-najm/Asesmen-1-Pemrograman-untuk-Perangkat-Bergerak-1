@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.math.BigInteger
 
 @Entity(
     tableName = "transactions", foreignKeys = [ForeignKey(
@@ -18,9 +19,11 @@ data class TransactionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val date: Long = System.currentTimeMillis(),
-    val amount: Int,
+    val amount: Long,
     val type: Boolean,
+    val imageId: String,
     @ColumnInfo(name = "userId") val userId: Long
+
 )
 
 

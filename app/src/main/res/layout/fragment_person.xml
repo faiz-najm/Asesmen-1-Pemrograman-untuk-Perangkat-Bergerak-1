@@ -21,7 +21,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.50"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/uangProses_hint" />
+            app:layout_constraintTop_toBottomOf="@+id/jumlahUang_hint" />
 
         <TextView
             android:id="@+id/deskripsi_app"
@@ -31,11 +31,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/roboto"
-
             android:justificationMode="inter_word"
             android:lineSpacingMultiplier="1"
             android:text="@string/description"
-            android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +60,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/uangProses_hint"
+            android:id="@+id/jumlahUang_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -74,10 +72,11 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/jumlahUang_inp"
-                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/jumlah_uang" />
+                android:hint="@string/jumlah_uang"
+                android:inputType="number"
+                android:maxLength="17" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

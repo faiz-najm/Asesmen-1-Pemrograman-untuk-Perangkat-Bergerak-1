@@ -2,7 +2,9 @@ package org.d3if3155.MoMi.ui.person
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputFilter
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.d3if3155.MoMi.MainActivity
@@ -18,14 +22,16 @@ import org.d3if3155.MoMi.data.dataStore
 import org.d3if3155.MoMi.databinding.FragmentPersonBinding
 import org.d3if3155.MoMi.db.TransactionDb
 import org.d3if3155.MoMi.db.UserEntity
+import org.d3if3155.MoMi.model.fromMoneyFormat
 import org.d3if3155.hitungbmi.ui.histori.PersonViewModel
 import org.d3if3155.hitungbmi.ui.histori.PersonViewModelFactory
+import java.text.DecimalFormat
 
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class PersonFragment : Fragment() {
+class PersonFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyListener {
 
     private val TAG = "PersonFragment"
 
@@ -43,8 +49,7 @@ class PersonFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
     private var id: Long = 0
-    private var namaPengguna: String? = ""
-    private var jumlah: Int = 0
+    private var jumlah: Long = 0L
     private val isFisrtTime: Boolean = true
 
 
@@ -54,6 +59,17 @@ class PersonFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPersonBinding.inflate(inflater, container, false)
+
+        binding.nameInp.onFocusChangeListener = this
+        binding.jumlahUangInp.onFocusChangeListener = this
+        binding.jumlahUangInp.setOnKeyListener(this)
+
+        /*val filter = InputFilter { source, _, _, _, _, _ ->
+            // Replace spaces with an empty string
+            source?.replace(" ".toRegex(), "") ?: ""
+        }
+
+        binding.jumlahUangInp.filters = arrayOf(filter)*/
 
         return binding.root
 
@@ -68,19 +84,18 @@ class PersonFragment : Fragment() {
     }
 
     private fun simpanUser() {
-        namaPengguna = binding.nameInp.text.toString()
-        val jumlahUang = binding.jumlahUangInp.text.toString()
-        jumlah = jumlahUang.toInt()
+        val uangProses = fromMoneyFormat(binding.jumlahUangInp.text.toString())
 
-        // validasi
-        if (namaPengguna!!.isEmpty()) {
-            Toast.makeText(context, "Nama tidak boleh kosong", Toast.LENGTH_SHORT).show()
+        if (validasiNama()) {
+            binding.nameInp.requestFocus()
             return
         }
 
-        if (jumlahUang.isEmpty()) {
-            Toast.makeText(context, "Jumlah tidak boleh kosong", Toast.LENGTH_SHORT).show()
-            return
+        if (uangProses.isNotEmpty()) {
+            jumlah = uangProses.toLong()
+            if (validasiUang()) return
+        } else {
+            jumlah = 0L
         }
 
         val user = UserEntity(
@@ -110,6 +125,36 @@ class PersonFragment : Fragment() {
         }
     }
 
+    private fun validasiUang(): Boolean {
+        val uangProses = fromMoneyFormat(binding.jumlahUangInp.text.toString())
+        if (uangProses.isNotEmpty()) {
+            if (uangProses.toBigInteger() > (Long.MAX_VALUE - 1000).toBigInteger()) {
+                binding.jumlahUangHint.error = "Jumlah uang maksimal Rp${Long.MAX_VALUE - 1000}"
+                return true
+            } else if (uangProses.toBigInteger() < 100.toBigInteger()) {
+                binding.jumlahUangHint.error = "Jumlah uang minimal Rp100"
+                return true
+            } else if (uangProses.toBigInteger() < 0.toBigInteger()) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun validasiNama(): Boolean {
+        if (binding.nameInp.text.toString().isEmpty()) {
+            binding.nameHint.error = "Nama tidak boleh kosong"
+            return true
+        } else if (binding.nameInp.text.toString().length < 3) {
+            binding.nameHint.error = "Nama minimal 3 karakter"
+            return true
+        } else if (binding.nameInp.text.toString().length > 20) {
+            binding.nameHint.error = "Nama maksimal 20 karakter"
+            return true
+        }
+        return false
+    }
+
     // Option Menu Setting onClick go to SettingFragment
 
     override fun onDestroyView() {
@@ -119,7 +164,59 @@ class PersonFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Simpan nama pengguna ke Bundle
-        outState.putString("nama_pengguna", namaPengguna)
+    }
+
+    override fun onFocusChange(view: View?, hasFocus: Boolean) {
+        if (view != null) {
+            when (view) {
+                binding.nameInp -> {
+                    if (!hasFocus) {
+                        validasiNama()
+                    }
+                }
+
+                binding.jumlahUangInp -> {
+                    if (hasFocus) {
+                        binding.jumlahUangHint.error = null
+                    } else {
+                        validasiUang()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onKey(view: View?, keyCode: Int, event: KeyEvent?): Boolean {
+
+
+
+
+        if (view != null) {
+            when (view.id) {
+                binding.jumlahUangInp.id -> {
+                    if (binding.jumlahUangInp.text.toString().length > 18) return false
+                    lifecycleScope.launch() {
+                        val uangProses = binding.jumlahUangInp
+                        if (keyCode == KeyEvent.KEYCODE_DEL) {
+                            binding.jumlahUangHint.error = null
+                        }
+
+                        // Currency format saat mengetik
+                        if (uangProses.text.toString().isNotEmpty()) {
+                            val parsedValue =
+                                uangProses.text.toString().replace(",", "").toBigInteger()
+                            val formattedValue = DecimalFormat("#,###").format(parsedValue)
+                            uangProses.setText(formattedValue)
+                            uangProses.setSelection(formattedValue.length)
+                        }
+                    }
+                }
+
+                binding.nameInp.id -> {
+                    binding.nameHint.error = null
+                }
+            }
+        }
+        return false
     }
 }

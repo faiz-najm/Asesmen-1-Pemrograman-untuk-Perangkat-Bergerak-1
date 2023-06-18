@@ -1,10 +1,14 @@
 package org.d3if3155.MoMi.ui.transaction
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -14,6 +18,8 @@ import org.d3if3155.MoMi.db.TransactionDao
 import org.d3if3155.MoMi.db.TransactionEntity
 import org.d3if3155.MoMi.db.UserDao
 import org.d3if3155.MoMi.db.UserEntity
+import org.d3if3155.MoMi.network.UpdateWorker
+import java.util.concurrent.TimeUnit
 
 class TransactionViewModel(
     private val db: TransactionDao,
@@ -43,14 +49,15 @@ class TransactionViewModel(
         }
     }
 
-    fun addOrSubtractAmount(userId: Long, amount: Int, type: Boolean) {
+    fun addOrSubtractAmount(userId: Long, amount: Long, type: Boolean, imageId: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 db.insert(
                     TransactionEntity(
                         userId = userId,
                         amount = amount,
-                        type = type
+                        type = type,
+                        imageId = imageId
                     )
                 )
             }
@@ -59,5 +66,16 @@ class TransactionViewModel(
 
     fun getUser(userId: Long): LiveData<UserEntity> {
         return userDb.getUser(userId)
+    }
+
+    fun scheduleUpdater(app: Application) {
+        val request = OneTimeWorkRequestBuilder<UpdateWorker>()
+            .setInitialDelay(1, TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(app).enqueueUniqueWork(
+            UpdateWorker.WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            request
+        )
     }
 }

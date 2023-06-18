@@ -1,5 +1,6 @@
 package org.d3if3155.hitungbmi.ui.histori
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -7,20 +8,21 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.d3if3155.MoMi.R
-import org.d3if3155.MoMi.databinding.ItemHistoriBinding
-import org.d3if3155.MoMi.db.TransactionEntity
+import org.d3if3155.MoMi.databinding.ItemCategoryBinding
+import org.d3if3155.MoMi.model.CategoryPic
+import org.d3if3155.MoMi.ui.categorypic.CategoryPicFragment
 import org.d3if3155.helloworld.network.CategoryPicApi
-import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
-class HistoriAdapter :
-    ListAdapter<TransactionEntity, HistoriAdapter.ViewHolder>(DIFF_CALLBACK) {
+class CategoryPicAdapter :
+    ListAdapter<CategoryPic, CategoryPicAdapter.ViewHolder>(DIFF_CALLBACK) {
 
+    private val data = mutableListOf<CategoryPic>()
     private var itemClickListener: OnItemClickListener? = null
+    var fragment: CategoryPicFragment? = null
 
     interface OnItemClickListener {
-        fun onItemClick(transaction: TransactionEntity)
+        fun onItemClick(transaction: CategoryPic)
     }
 
     fun setOnItemClickListener(listener: OnItemClickListener) {
@@ -29,15 +31,15 @@ class HistoriAdapter :
 
     companion object {
         private val DIFF_CALLBACK =
-            object : DiffUtil.ItemCallback<TransactionEntity>() {
+            object : DiffUtil.ItemCallback<CategoryPic>() {
                 override fun areItemsTheSame(
-                    oldData: TransactionEntity, newData: TransactionEntity
+                    oldData: CategoryPic, newData: CategoryPic
                 ): Boolean {
                     return oldData.id == newData.id
                 }
 
                 override fun areContentsTheSame(
-                    oldData: TransactionEntity, newData: TransactionEntity
+                    oldData: CategoryPic, newData: CategoryPic
                 ): Boolean {
                     return oldData == newData
                 }
@@ -48,57 +50,56 @@ class HistoriAdapter :
         parent: ViewGroup, viewType: Int
     ): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ItemHistoriBinding.inflate(inflater, parent, false)
+        val binding = ItemCategoryBinding.inflate(inflater, parent, false)
         return ViewHolder(binding, itemClickListener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(data[position])
+    }
+
+    override fun getItemCount(): Int {
+        return data.size
     }
 
     inner class ViewHolder(
-        private val binding: ItemHistoriBinding,
+        private val binding: ItemCategoryBinding,
         itemClickListener: OnItemClickListener?
     ) : RecyclerView.ViewHolder(binding.root) {
-
-        private val dateFormatter = SimpleDateFormat(
-            "dd MMMM yyyy",
-            Locale("id", "ID")
-        )
+        var bundle : Bundle
+        var categoryPicId = 0L
 
         init {
             binding.root.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    val item = getItem(position)
+                    val item = data[position]
                     itemClickListener?.onItemClick(item)
                 }
             }
+
+            bundle = fragment?.requireArguments()!!
+
+            categoryPicId = bundle.getLong("categoryId")
         }
 
-        // bind untuk kategori ( menambahan/mengurangan ) dan tanggal transaksi dan jumlah uang
-        fun bind(item: TransactionEntity) = with(binding) {
-            val colorRes = if (item.type) {
-                R.color.tambah
-            } else {
-                R.color.kurang
-            }
+        // = with artinya sama dengan binding.apply
+        fun bind(item: CategoryPic) = with(binding) {
 
             Glide.with(imageView.context)
                 .load(CategoryPicApi.getCategoryPicUrl(item.imageId))
                 .error(R.drawable.baseline_broken_image_24)
                 .into(imageView)
 
+            jumlahTextView.text = item.nama
 
-            tanggalTextView.text = dateFormatter.format(item.date)
-
-            val numberFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-            numberFormat.minimumFractionDigits = 0
-
-
-            val formattedNumber = numberFormat.format(item.amount.toString().toLong())
-
-            jumlahTextView.text = formattedNumber
+            if (item.id == categoryPicId) binding.checkBox.isChecked = true
         }
+    }
+
+    fun updateData(newData: List<CategoryPic>) {
+        data.clear()
+        data.addAll(newData)
+        notifyDataSetChanged()
     }
 }
