@@ -7,9 +7,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.d3if3155.MoMi.data.SettingDataStore
-import org.d3if3155.MoMi.data.dataStore
+import kotlinx.coroutines.runBlocking
 import org.d3if3155.MoMi.db.TransactionDao
 import org.d3if3155.MoMi.db.TransactionEntity
 import org.d3if3155.MoMi.db.UserDao
@@ -24,41 +22,22 @@ class TransactionViewModel(
         db.getTotalAmount(it.id)
     }
 
-    fun getAllTransactions(): LiveData<List<TransactionEntity>> {
-        val allTransactions = this.currentUser.switchMap {
-            db.getAllTransaction(it.id)
-        }
-        return allTransactions
-    }
-
-    fun insertTransaction(transaction: TransactionEntity) {
-        viewModelScope.launch {
-            db.insert(transaction)
-        }
-    }
-
-    fun deleteTransaction(transaction: TransactionEntity) {
-        viewModelScope.launch {
-            db.delete(transaction)
-        }
-    }
-
     fun addOrSubtractAmount(userId: Long, amount: Long, type: Boolean, imageId: String) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                db.insert(
-                    TransactionEntity(
-                        userId = userId,
-                        amount = amount,
-                        type = type,
-                        imageId = imageId
-                    )
+        viewModelScope.launch(Dispatchers.IO) {
+            db.insert(
+                TransactionEntity(
+                    userId = userId,
+                    amount = amount,
+                    type = type,
+                    imageId = imageId
                 )
-            }
+            )
+
         }
     }
 
     fun getUser(userId: Long): LiveData<UserEntity> {
-        return userDb.getUser(userId)
+        return runBlocking(Dispatchers.IO) { userDb.getUser(userId) }
+
     }
 }

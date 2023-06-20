@@ -61,7 +61,7 @@
             app:layout_constraintBottom_toTopOf="@+id/button_share"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/category_hint" />
+            app:layout_constraintTop_toBottomOf="@+id/keterangan_hint" />
 
         <Button
             android:id="@+id/button_share"
@@ -81,7 +81,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:justificationMode="inter_word"
             android:text="@string/promtNama"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +91,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:justificationMode="inter_word"
             android:text="@string/promtJumlah"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +119,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/category_hint"
+            android:id="@+id/keterangan_hint"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,7 +131,7 @@
             app:layout_constraintTop_toBottomOf="@+id/jumlahUang_hint">
 
             <AutoCompleteTextView
-                android:id="@+id/category_inp"
+                android:id="@+id/keterangan_inp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/category_proses"

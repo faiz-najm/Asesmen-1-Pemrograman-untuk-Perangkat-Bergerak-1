@@ -17,4 +17,7 @@
     <color name="tambah">#38E8FF</color>
     <color name="kurang">#D32F2F</color>
 
+    <color name="red_500">#F44336</color>
+    <color name="red_700">#D32F2F</color>
+
 </resources>

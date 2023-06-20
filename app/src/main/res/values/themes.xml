@@ -1,18 +1,34 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.MoMi" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+
+        <!-- App bar and other top-level elements -->
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorPrimaryVariant">@color/blue_700</item>
         <item name="colorOnPrimary">@color/white</item>
 
+        <!-- Components progress bars, switches, and checkboxes. -->
         <item name="colorSecondary">@color/blue_200</item>
         <item name="colorSecondaryVariant">@color/blue_400</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/white</item>
 
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <!--<item name="android:statusBarColor">?attr/colorPrimaryVariant</item>-->
 
-        !-- Customize your theme here. -->
+        <!-- Android system status bar. -->
+        <!--<item name="colorSurface">@color/black</item>-->
+        <item name="colorOnSurface">#000000</item>
+
+        <!-- Android system navigation bar. -->
+        <item name="colorError">@color/red_500</item>
+        <item name="colorOnError">@color/white</item>
+
+        <!-- Text on top of the background color -->
+        <item name="colorPrimarySurface">@color/blue_500</item>
+        <item name="colorOnPrimarySurface">@color/white</item>
+
+        <item name="colorOnBackground">@color/white</item>
+
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
 
@@ -24,4 +40,5 @@
     </style>
 
     <style name="Theme.MoMi" parent="Base.Theme.MoMi" />
+
 </resources>

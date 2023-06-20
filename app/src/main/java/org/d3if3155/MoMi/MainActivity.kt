@@ -11,10 +11,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import org.d3if3155.MoMi.databinding.ActivityMainBinding
-import org.d3if3155.MoMi.db.TransactionEntity
 
 class MainActivity : AppCompatActivity() {
 
