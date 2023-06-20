@@ -156,7 +156,7 @@ class TransactionFragment : Fragment(), MenuProvider {
     private fun shareUang() {
         val uangPengguna = binding.uangPengguna.text.toString()
         val keterangan = binding.keteranganInp.text.toString()
-        val shareText = "Uang: $uangPengguna, Keterangan: $keterangan"
+        val shareText = "Halo, saya baru saja $keterangan sebesar $uangPengguna"
         // Implement share intent with shareText
 
         val intent = Intent(Intent.ACTION_SEND)

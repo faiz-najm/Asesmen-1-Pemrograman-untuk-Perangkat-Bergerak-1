@@ -1,7 +1,9 @@
 package org.d3if3155.hitungbmi.ui.histori
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +11,7 @@ import com.bumptech.glide.Glide
 import org.d3if3155.MoMi.R
 import org.d3if3155.MoMi.databinding.ItemHistoriBinding
 import org.d3if3155.MoMi.db.TransactionEntity
+import org.d3if3155.MoMi.model.toMoneyFormat
 import org.d3if3155.helloworld.network.CategoryPicApi
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -78,11 +81,6 @@ class HistoriAdapter :
 
         // bind untuk kategori ( menambahan/mengurangan ) dan tanggal transaksi dan jumlah uang
         fun bind(item: TransactionEntity) = with(binding) {
-            val colorRes = if (item.type) {
-                R.color.tambah
-            } else {
-                R.color.kurang
-            }
 
             Glide.with(imageView.context)
                 .load(CategoryPicApi.getCategoryPicUrl(item.imageId))
@@ -95,10 +93,18 @@ class HistoriAdapter :
             val numberFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
             numberFormat.minimumFractionDigits = 0
 
+            val textView: TextView = binding.jumlahTextView
+            textView.text = item.amount.toString()
 
-            val formattedNumber = numberFormat.format(item.amount.toString().toLong())
+            // menampilkan jumlah uang yang ditambahkan atau dikurangkan dengan warna yang berbeda
+            jumlahTextView.text = if (item.type) {
+                textView.setTextColor(Color.parseColor("#428ad3"))
+                "+${toMoneyFormat(textView.text.toString().toLong())}"
+            } else {
+                textView.setTextColor(Color.parseColor("#d34242"))
+                "-${toMoneyFormat(textView.text.toString().toLong())}"
+            }
 
-            jumlahTextView.text = formattedNumber
         }
     }
 }
