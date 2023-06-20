@@ -16,6 +16,21 @@
         <action
             android:id="@+id/action_SecondFragment_to_categoryPicFragment"
             app:destination="@id/categoryPicFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_aboutFragment2"
+            app:destination="@id/aboutFragment" />
+        <argument
+            android:name="categoryPicId"
+            app:argType="long" />
+        <argument
+            android:name="categoryPicNama"
+            app:argType="string" />
+        <argument
+            android:name="imageId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/historiFragment"
@@ -29,14 +44,20 @@
     <fragment
         android:id="@+id/categoryPicFragment"
         android:name="org.d3if3155.MoMi.ui.categorypic.CategoryPicFragment"
-        android:label="Select Category"
+        android:label="Pilih Kategori"
         tools:layout="@layout/fragment_category_pic">
         <action
             android:id="@+id/action_categoryPicFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/SecondFragment"
+            app:launchSingleTop="false" />
         <argument
-            android:name="imageId"
-            app:argType="string" />
+            android:name="categoryPicId"
+            app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="org.d3if3155.MoMi.ui.about.AboutFragment"
+        android:label="@string/tentang_aplikasi"
+        tools:layout="=@layout/fragment_about"/>
 
 </navigation>

@@ -1,9 +1,14 @@
 package org.d3if3155.MoMi.ui.transaction
 
+import android.Manifest
 import org.d3if3155.MoMi.model.toMoneyFormat
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,23 +18,27 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import org.d3if3155.MoMi.MainActivity
 import org.d3if3155.MoMi.R
 import org.d3if3155.MoMi.data.SettingDataStore
 import org.d3if3155.MoMi.data.dataStore
 import org.d3if3155.MoMi.databinding.FragmentTransactionBinding
 import org.d3if3155.MoMi.db.TransactionDb
+import org.d3if3155.MoMi.model.fromMoneyFormat
 import org.d3if3155.hitungbmi.ui.histori.TransactionViewModelFactory
 import java.text.DecimalFormat
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
-class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyListener {
+class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnClickListener {
 
     private val layoutDataStore by lazy { SettingDataStore(requireActivity().dataStore) }
 
@@ -47,8 +56,12 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
     private val binding get() = _binding!!
 
     var categoryId = 0L
-    lateinit var categoryNama: String
+    var categoryNama: String = ""
     var imageId: String = ""
+
+    var isRadioButtonChecked = false
+    var isJumlahUangValid = false
+    var isKeteranganValid = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -58,18 +71,24 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
 
         setHasOptionsMenu(true)
 
-        val bundle = arguments
+//        val bundle = arguments
+        val bundle =
+            findNavController().currentBackStackEntry?.savedStateHandle?.get<Bundle>("bundleKey")
 
         if (bundle != null) {
-            categoryId = bundle.getLong("categoryPicId")
-            categoryNama = bundle.getString("categoryPicNama").toString()
-            imageId = bundle.getString("imageId").toString()
+            if (!bundle.isEmpty) {
+                categoryId = bundle.getLong("categoryPicId")
+                categoryNama = bundle.getString("categoryPicNama").toString()
+                imageId = bundle.getString("imageId").toString()
 
-            binding.categoryInp.setText(categoryNama)
+                binding.categoryInp.setText(categoryNama)
+            }
         }
 
-        binding.uangProsesInp.setOnFocusChangeListener(this)
-        binding.uangProsesInp.setOnKeyListener(this)
+        binding.tambahRadioButton.setOnClickListener(this)
+        binding.kurangRadioButton.setOnClickListener(this)
+        binding.uangProsesInp.onFocusChangeListener = this
+//        binding.uangProsesInp.setOnKeyListener(this)
 
         lifecycleScope.launch {
             layoutDataStore.userIdFlow.collect { userId ->
@@ -93,6 +112,11 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        // Set the TextWatcher on the EditText
+        binding.uangProsesInp.addTextChangedListener(uangProsesTextWatcher)
+
         // Proses menghitung jumlah uang yang di tambahkan atau di kurangi
         binding.buttonProses.setOnClickListener {
             prosesUang()
@@ -103,32 +127,38 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
         }
 
         binding.categoryInp.setOnClickListener {
-            Bundle().apply {
-                putLong("categoryId", categoryId)
-                putString("categoryPicId", imageId)
+            val action = TransactionFragmentDirections.actionSecondFragmentToCategoryPicFragment(
+                categoryPicId = categoryId
+            )
 
-                findNavController().navigate(
-                    R.id.action_SecondFragment_to_categoryPicFragment,
-                    this
-                )
-            }
+            findNavController().navigate(action)
         }
 
         binding.categoryHint.setOnClickListener {
-            Bundle().apply {
-                putLong("categoryId", categoryId)
-                putString("categoryPicId", imageId)
+            val action = TransactionFragmentDirections.actionSecondFragmentToCategoryPicFragment(
+                categoryPicId = categoryId
+            )
 
-                findNavController().navigate(
-                    R.id.action_SecondFragment_to_categoryPicFragment,
-                    this
-                )
-            }
+            findNavController().navigate(action)
         }
 
-        viewModel.scheduleUpdater(requireActivity().application)
+
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.categoryInp.setText(categoryNama)
+
+        if (binding.categoryInp.text.toString().isNotEmpty()) {
+            isKeteranganValid = true
+            enableButtonProses()
+        }
+    }
+
+    private fun enableButtonProses() {
+        binding.buttonProses.isEnabled =
+            isRadioButtonChecked && isJumlahUangValid && isKeteranganValid
+    }
 
     private fun shareUang() {
         val uangPengguna = binding.uangPengguna.text.toString()
@@ -144,9 +174,9 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
     }
 
     private fun prosesUang() {
-        if (validasiUang()) return
+        val uangProses = fromMoneyFormat(binding.uangProsesInp.text.toString()).toLong()
 
-        val uangProses = binding.uangProsesInp.text.toString().replace(",", "").toLong()
+        if (validasiUang()) return
 
         // Radio button yang dipilih akan menentukan apakah jumlah uang akan ditambahkan atau dikurangi
         if (binding.tambahRadioButton.isChecked) {
@@ -167,10 +197,12 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
             if (it == null) binding.uangPengguna.text = "Rp. 0"
             else binding.uangPengguna.text = toMoneyFormat(it)
         }
+
+        Toast.makeText(requireContext(), "Uang berhasil di proses", Toast.LENGTH_SHORT).show()
     }
 
     private fun validasiUang(): Boolean {
-        val uangProses = binding.uangProsesInp.text.toString().replace(",", "")
+        val uangProses = fromMoneyFormat(binding.uangProsesInp.text.toString())
 
         if (!binding.tambahRadioButton.isChecked && !binding.kurangRadioButton.isChecked) {
             Toast.makeText(
@@ -206,7 +238,7 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
             }
 
             R.id.action_tentang -> {
-//                view?.findNavController()?.navigate(R.id.action_TransactionFragment_to_SettingFragment)
+                view?.findNavController()?.navigate(R.id.action_SecondFragment_to_aboutFragment)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -215,6 +247,43 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private val uangProsesTextWatcher = object : TextWatcher {
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            // This method is called before the text is changed
+            // You can perform any necessary operations here
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // This method is called when the text is being changed
+            // You can handle the text changes and perform any necessary validations here
+            binding.jumlahUangHint.error = null
+
+            if (s?.isNotEmpty() == true) {
+                isJumlahUangValid = true
+                enableButtonProses()
+            } else {
+                isJumlahUangValid = false
+                enableButtonProses()
+            }
+
+            // Currency format saat mengetik
+            if (s?.isNotEmpty() == true) {
+                val parsedValue = s.toString().replace(",", "").toBigInteger()
+                val formattedValue = DecimalFormat("#,###").format(parsedValue)
+                binding.uangProsesInp.removeTextChangedListener(this)
+                binding.uangProsesInp.setText(formattedValue)
+                binding.uangProsesInp.setSelection(formattedValue.length)
+                binding.uangProsesInp.addTextChangedListener(this)
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            // This method is called after the text has changed
+            // You can perform any necessary operations here
+        }
     }
 
     override fun onFocusChange(view: View?, hasFocus: Boolean) {
@@ -230,26 +299,63 @@ class TransactionFragment : Fragment(), View.OnFocusChangeListener, View.OnKeyLi
         }
     }
 
-    override fun onKey(view: View?, keyCode: Int, event: KeyEvent?): Boolean {
-        if (view != null) {
-            when (view.id) {
-                binding.uangProsesInp.id -> {
-                    val uangProses = binding.uangProsesInp
+//    override fun onKey(view: View?, keyCode: Int, event: KeyEvent?): Boolean {
+//        if (view != null) {
+//            when (view.id) {
+//                binding.uangProsesInp.id -> {
+//                    val uangProses = binding.uangProsesInp
+//
+//                    binding.jumlahUangHint.error = null
+//
+//                    if (keyCode != KeyEvent.KEYCODE_DEL && binding.uangProsesInp.text.toString()
+//                            .isNotEmpty()
+//                    ) {
+//                        isJumlahUangValid = true
+//                        enableButtonProses()
+//                    } else if (keyCode == KeyEvent.KEYCODE_DEL && binding.uangProsesInp.text.toString().length == 1) {
+//                        isJumlahUangValid = false
+//                        enableButtonProses()
+//                    }
+//
+//                    // Currency format saat mengetik
+//                    if (uangProses.text.toString().isNotEmpty()) {
+//                        val parsedValue = uangProses.text.toString().replace(",", "").toBigInteger()
+//                        val formattedValue = DecimalFormat("#,###").format(parsedValue)
+//                        uangProses.setText(formattedValue)
+//                        uangProses.setSelection(formattedValue.length)
+//                    }
+//                }
+//            }
+//        }
+//        return false
+//    }
 
-                    if (keyCode == KeyEvent.KEYCODE_DEL) {
-                        binding.jumlahUangHint.error = null
-                    }
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            binding.tambahRadioButton.id -> {
+                isRadioButtonChecked = true
+                enableButtonProses()
+            }
 
-                    // Currency format saat mengetik
-                    if (uangProses.text.toString().isNotEmpty()) {
-                        val parsedValue = uangProses.text.toString().replace(",", "").toBigInteger()
-                        val formattedValue = DecimalFormat("#,###").format(parsedValue)
-                        uangProses.setText(formattedValue)
-                        uangProses.setSelection(formattedValue.length)
-                    }
-                }
+            binding.kurangRadioButton.id -> {
+                isRadioButtonChecked = true
+                enableButtonProses()
             }
         }
-        return false
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                MainActivity.PERMISSION_REQUEST_CODE
+            )
+        }
     }
 }

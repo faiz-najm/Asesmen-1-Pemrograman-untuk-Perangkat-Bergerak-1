@@ -57,6 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/proses_uang"
+            android:enabled="false"
             app:layout_constraintBottom_toTopOf="@+id/button_share"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +107,9 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/radioGroup">
+            app:layout_constraintTop_toBottomOf="@id/radioGroup"
+            tools:ignore="ExtraText">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/uangProses_inp"
@@ -119,7 +122,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/category_hint"
-            style="@style/Widget.AppCompat.Spinner.DropDown.ActionBar"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -129,13 +132,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/jumlahUang_hint">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <AutoCompleteTextView
                 android:id="@+id/category_inp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/category_proses"
-                android:focusable="false"
-                android:maxLength="10" />
+                android:focusable="false"/>
+
         </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

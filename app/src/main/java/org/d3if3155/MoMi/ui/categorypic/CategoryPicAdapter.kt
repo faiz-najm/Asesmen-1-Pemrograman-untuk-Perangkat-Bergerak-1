@@ -70,6 +70,7 @@ class CategoryPicAdapter :
         var categoryPicId = 0L
 
         init {
+            categoryPicId = 0L
             binding.root.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -77,10 +78,8 @@ class CategoryPicAdapter :
                     itemClickListener?.onItemClick(item)
                 }
             }
-
             bundle = fragment?.requireArguments()!!
-
-            categoryPicId = bundle.getLong("categoryId")
+            categoryPicId = bundle.getLong("categoryPicId")
         }
 
         // = with artinya sama dengan binding.apply
@@ -93,7 +92,7 @@ class CategoryPicAdapter :
 
             jumlahTextView.text = item.nama
 
-            if (item.id == categoryPicId) binding.checkBox.isChecked = true
+            binding.checkBox.isChecked = item.id == categoryPicId
         }
     }
 

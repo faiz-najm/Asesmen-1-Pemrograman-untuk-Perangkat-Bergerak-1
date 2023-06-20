@@ -10,7 +10,7 @@
     <string name="description">Tambah nama dan anggaran untuk mengontrol uang</string>
     <string name="text_field_nama">Nama</string>
     <string name="jumlah_uang">Jumlah Uang Saat Ini</string>
-    <string name="uang_proses">Masukan Jumlah</string>
+    <string name="uang_proses">Masukkan Jumlah</string>
     <string name="nama">Nama</string>
     <string name="simpan">Simpan</string>
     <string name="proses">Pilih</string>
@@ -23,6 +23,7 @@
 
     // Assesment 2
     <string name="tentang_aplikasi">Tentang Aplikasi</string>
+    <string name="penjelasan_momi">MoMi adalah aplikasi pencatatan keuangan harian yang mudah digunakan! MoMi menyediakan fitur-fitur yang berguna untuk mencatat jumlah uang, mengurangi jumlah uang maupun menambahkan karena transaksi yang dilakukan. Selain itu, terdapat histori agar mengetahui kapan pencatatan uang tersebut dilakukan :). \n\nCopyright © 2023 Faiz Najmuddin.\nAll rights reserved.</string>
     <string name="belum_ada_data">Belum ada data</string>
     <string name="konfirmasi_hapus">Hapus semua transaction?</string>
     <string name="konfirmasi_hapus_item">Hapus transaction?</string>
@@ -31,10 +32,12 @@
     <string name="hapus_histori">Hapus Histori</string>
     <string name="share_uang">Share</string>
     <string name="koneksi_error">Koneksi error\n</string>
-    <string name="category_proses">Pilih Category</string>
+    <string name="category_proses">Pilih Kategori</string>
 
     // Assesment 3
     <string name="channel_name">Updater</string>
-    <string name="channel_desc">Update data hewan otomatis</string>
+    <string name="channel_desc">Update data uang</string>
+    <string name="notif_title">Wah, udah waktunya, nih!</string>
+    <string name="notif_text">Jangan lupa untuk mencatat keuanganmu hari ini.</string>
 
 </resources>
